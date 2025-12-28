@@ -1,0 +1,108 @@
+import 'dart:io';
+
+bool createFile(String fileName) {
+  try {
+    File file = File(fileName);
+    if (!file.existsSync()) {
+      file.createSync();
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+bool deleteFile(String fileName) {
+  try {
+    File file = File(fileName);
+    if (file.existsSync()) {
+      file.deleteSync();
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
+List<String> readFile(String fileName) {
+  File file = File(fileName);
+  if (file.existsSync()) {
+    return file.readAsLinesSync();
+  }
+  return [];
+}
+
+void printContent(List<String> content) {
+  for (String line in content) {
+    print(line);
+  }
+}
+
+void addNumbers(String fileName, List<int> numbers) {
+  File file = File(fileName);
+  if (!file.existsSync()) {
+    file.createSync();
+  }
+  for (int number in numbers) {
+    file.writeAsStringSync('$number\n', mode: FileMode.append);
+  }
+}
+
+void printNumbers(List<String> content) {
+  List<int> numbers = [];
+  for (String line in content) {
+    if (line.trim().isNotEmpty) {
+      numbers.add(int.parse(line));
+    }
+  }
+  numbers.sort();
+  for (int number in numbers) {
+    print(number);
+  }
+}
+
+void main() {
+  bool playersCreated = createFile('players.txt');
+  bool carsCreated = createFile('cars.txt');
+
+  print('players.txt létrehozása: ${playersCreated ? "sikeres" : "sikertelen"}');
+  print('cars.txt létrehozása: ${carsCreated ? "sikeres" : "sikertelen"}');
+
+  bool playersDeleted = deleteFile('players.txt');
+  print('players.txt törlése: ${playersDeleted ? "sikeres" : "sikertelen"}');
+
+  List<String> employees = readFile('employees.txt');
+
+  List<String> women = [];
+  List<String> men = [];
+
+  for (String line in employees) {
+    if (line.contains('female')) {
+      women.add(line);
+    } else if (line.contains('male')) {
+      men.add(line);
+    }
+  }
+
+  print('\nNők adatai:');
+  printContent(women);
+
+  print('\nFérfiak adatai:');
+  printContent(men);
+
+  List<int> givenNumbers = [
+    34, 72, 18, 91, 5, 49, 87, 63, 10, 27,
+    3, 68, 96, 40, 55, 82, 7, 14, 46, 25,
+    79, 32, 98, 60, 20, 74, 1, 89, 51, 16,
+    70, 39, 92, 12, 57, 36, 80, 29, 64, 8,
+    43, 21, 66, 93, 48, 77, 23, 53, 85
+  ];
+
+  addNumbers('numbers.txt', givenNumbers);
+
+  List<String> numbersFromFile = readFile('numbers.txt');
+
+  print('\nSzámok növekvő sorrendben:');
+  printNumbers(numbersFromFile);
+}
